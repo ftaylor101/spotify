@@ -28,6 +28,18 @@ if df_created:
     df["master_metadata_track_name"] = df["master_metadata_track_name"] + " | " + df["master_metadata_album_artist_name"]
     st.dataframe(df.head())
 
+    st.write("### Overall Stats :bar_chart:")
+    top_artist = df["master_metadata_album_artist_name"].mode()[0]
+    top_album = df["master_metadata_album_album_name"].mode()[0]
+    top_track = df["master_metadata_track_name"].mode()[0]
+
+    overall_stats = {
+    "Category": ["Top Artist", "Top Album", "Top Track"],
+    "Name": [top_artist, top_album, top_track]
+    }
+    overall_stats_df = pd.DataFrame(overall_stats)
+    st.table(overall_stats_df)
+
     st.write("### Platforms :desktop_computer: :iphone: :video_game: :tv:")
     os_fig = px.histogram(df, x="platform")
     st.plotly_chart(os_fig)
