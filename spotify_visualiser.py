@@ -25,6 +25,7 @@ if df_created:
     df["dayname"] = df["datetime"].dt.day_name()
     df["hour"] = df["datetime"].dt.hour
     df["month"] = df["datetime"].dt.month_name()
+    df["master_metadata_track_name"] = df["master_metadata_track_name"] + " | " + df["master_metadata_album_artist_name"]
     st.dataframe(df.head())
 
     st.write("### Platforms :desktop_computer: :iphone: :video_game: :tv:")
