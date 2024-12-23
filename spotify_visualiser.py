@@ -34,8 +34,8 @@ if df_created:
     top_track = df["master_metadata_track_name"].mode()[0]
 
     overall_stats = {
-    "Category": ["Top Artist", "Top Album", "Top Track"],
-    "Name": [top_artist, top_album, top_track]
+        "Category": ["Top Artist", "Top Album", "Top Track"],
+        "Name": [top_artist, top_album, top_track]
     }
     overall_stats_df = pd.DataFrame(overall_stats)
     st.table(overall_stats_df)
