@@ -116,12 +116,17 @@ if df_created:
     hours_per_day_df = days_df["ms_played"].sum().to_frame()
     hours_per_day_df.reset_index(inplace=True)
     hours_per_day_df["hours"] = hours_per_day_df["ms_played"]/3600000
-    hours_per_day_fig = px.bar(hours_per_day_df, x='dayname', y='hours', title="Time in hours listened per day across entire listening history")
+    hours_per_day_fig = px.bar(hours_per_day_df, x="dayname", y="hours",
+                               category_orders={"dayname": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]},
+                               title="Time in hours listened per day across entire listening history")
     st.plotly_chart(hours_per_day_fig)
 
     # monthly listening time
     months_df = df_date_filtered.groupby(["month"])
     songs_per_month_df = months_df["month"].value_counts().to_frame()
     songs_per_month_df.reset_index(inplace=True)
-    songs_per_month_fig = px.bar(songs_per_month_df, x="month", y="count", title="Total number of songs played each month across listening history")
+    songs_per_month_fig = px.bar(songs_per_month_df, x="month", y="count",
+                                 category_orders={"month": ["January", "February", "March", "April", "May", "June",
+                                                            "July", "August", "September", "October", "November", "December"]},
+                                 title="Total number of songs played each month across listening history")
     st.plotly_chart(songs_per_month_fig)
