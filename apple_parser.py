@@ -1,4 +1,6 @@
+import json
 import pandas as pd
+import streamlit as st
 
 
 class AppleParser:
@@ -30,9 +32,22 @@ class AppleParser:
         'UTC Offset In Seconds'
     ]
 
-    def __init__(self, file_path):
-        self.df = pd.read_csv(file_path)
+    def __init__(self, csv_file_path: str, identifier_file_path: str, library_tracks_file_path: str):
+        self.df = pd.read_csv(csv_file_path)
         self.df = self.df[self.COLUMNS]
+
+        self.identifier = json.load(open(identifier_file_path))
+        self.library_tracks = json.load(open(library_tracks_file_path))
 
     def get_dataframe(self):
         return self.df
+
+
+if __name__ == '__main__':
+    apple_parser = AppleParser(
+        'data\\apple\\Apple Music Library Tracks.json',
+        'data\\apple\\Identifier Information.json',
+        'data\\apple\\Apple Music Library Tracks.json'
+    )
+    df = apple_parser.get_dataframe()
+    st.write(df.head())
