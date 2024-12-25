@@ -1,4 +1,3 @@
-import json
 import pandas as pd
 import streamlit as st
 
@@ -39,7 +38,7 @@ class AppleParser:
         self.identifier_df = pd.read_json(identifier_file_path)
         self.library_tracks_df = pd.read_json(library_tracks_file_path)
 
-        # Merge the DataFrames on 'Song Name' and 'Identifier' columns
+        # Merge the DataFrames on 'Song Name' and 'Title' columns
         merged_df = pd.merge(self.music_activity_df, self.identifier_df, left_on='Song Name', right_on='Title')
         converted_df = merged_df.astype({'Identifier': int})
         # Merge the DataFrames on 'Identifier' and 'Apple Music Identifier' columns
