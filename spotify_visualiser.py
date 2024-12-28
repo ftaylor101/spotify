@@ -130,3 +130,25 @@ if df_created:
                                                             "July", "August", "September", "October", "November", "December"]},
                                  title="Total number of songs played each month across listening history")
     st.plotly_chart(songs_per_month_fig)
+
+    # discovery history
+    st.write("### Discovery History :mag:")
+    # using the date filtered dataframe for now, but this might be better with the original one
+    discovery_df = df_date_filtered.sort_values(by="datetime")
+    discovery_df.drop_duplicates(subset=["master_metadata_track_name"], keep="first", inplace=True)
+    song_frequencies = df_date_filtered.value_counts("master_metadata_track_name").to_frame()
+    song_frequencies.reset_index(inplace=True)
+    song_frequencies.columns = ["master_metadata_track_name", "frequency"]
+    discovery_df = discovery_df.merge(song_frequencies, on="master_metadata_track_name")
+
+    discovery_filter = st.selectbox("Top %", [25, 50, 75, 100], index=3, key="discovery_filter")
+    if discovery_filter == 100:
+        discovery_day_fig = px.histogram(discovery_df, x="datetime", title="Discovery history of songs")
+        print(discovery_df)
+        st.plotly_chart(discovery_day_fig)
+    else:
+        listen_count = song_frequencies["frequency"].max() * (discovery_filter/100)
+        filtered_track = song_frequencies[song_frequencies["frequency"] < listen_count].index.values
+        filtered_df = discovery_df[discovery_df["master_metadata_track_name"].isin(filtered_track)]
+        discovery_day_fig = px.histogram(filtered_df, x="datetime", title="Discovery history of songs")
+        st.plotly_chart(discovery_day_fig)
