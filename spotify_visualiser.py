@@ -133,12 +133,16 @@ if df_created:
 
     # discovery history
     st.write("### Discovery History :mag:")
-    # using the date filtered dataframe for now, but this might be better with the original one
     discovery_df = df_date_filtered.sort_values(by="datetime")
     discovery_df.drop_duplicates(subset=["master_metadata_track_name"], keep="first", inplace=True)
-    song_frequencies = df_date_filtered.value_counts("master_metadata_track_name").to_frame()
-    song_frequencies.reset_index(inplace=True)
-    song_frequencies.columns = ["master_metadata_track_name", "frequency"]
-    discovery_df = discovery_df.merge(song_frequencies, on="master_metadata_track_name")
-    discovery_day_fig = px.histogram(discovery_df, x="datetime", title="Discovery history of songs")
-    st.plotly_chart(discovery_day_fig)
+    discovery_df["type"] = "Discovered"
+    discovery_fig = px.histogram(discovery_df, x="datetime", title="Discovery history of songs")
+    st.plotly_chart(discovery_fig)
+
+    total_df = df_date_filtered
+    total_df["type"] = "Total"
+    combined_df = pd.concat([discovery_df, total_df])
+    combined_discovery_fig = px.histogram(combined_df, x="datetime", color="type", title="Comparison to total songs listened to")
+    st.plotly_chart(combined_discovery_fig)
+    combined_df.to_csv("temp.csv")
+    # need to verify that the histogram is correct, the dataframe doesn't look quite right
