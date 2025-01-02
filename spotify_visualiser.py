@@ -144,5 +144,3 @@ if df_created:
     combined_df = pd.concat([discovery_df, total_df])
     combined_discovery_fig = px.histogram(combined_df, x="datetime", color="type", title="Comparison to total songs listened to")
     st.plotly_chart(combined_discovery_fig)
-    combined_df.to_csv("temp.csv")
-    # need to verify that the histogram is correct, the dataframe doesn't look quite right
