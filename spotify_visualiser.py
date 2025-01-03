@@ -139,8 +139,9 @@ if df_created:
     discovery_fig = px.histogram(discovery_df, x="datetime", title="Discovery history of songs")
     st.plotly_chart(discovery_fig)
 
-    total_df = df_date_filtered
-    total_df["type"] = "Total"
-    combined_df = pd.concat([discovery_df, total_df])
+    repeated_df = pd.merge(df_date_filtered, discovery_df, how="outer", indicator=True)
+    repeated_df = repeated_df[repeated_df._merge == "left_only"]
+    repeated_df["type"] = "Repeated"
+    combined_df = pd.concat([discovery_df, repeated_df])
     combined_discovery_fig = px.histogram(combined_df, x="datetime", color="type", title="Comparison to total songs listened to")
     st.plotly_chart(combined_discovery_fig)
