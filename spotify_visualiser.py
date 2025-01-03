@@ -130,3 +130,18 @@ if df_created:
                                                             "July", "August", "September", "October", "November", "December"]},
                                  title="Total number of songs played each month across listening history")
     st.plotly_chart(songs_per_month_fig)
+
+    # discovery history
+    st.write("### Discovery History :mag:")
+    discovery_df = df_date_filtered.sort_values(by="datetime")
+    discovery_df.drop_duplicates(subset=["master_metadata_track_name"], keep="first", inplace=True)
+    discovery_df["type"] = "Discovered"
+    discovery_fig = px.histogram(discovery_df, x="datetime", title="Discovery history of songs")
+    st.plotly_chart(discovery_fig)
+
+    repeated_df = pd.merge(df_date_filtered, discovery_df, how="outer", indicator=True)
+    repeated_df = repeated_df[repeated_df._merge == "left_only"]
+    repeated_df["type"] = "Repeated"
+    combined_df = pd.concat([discovery_df, repeated_df])
+    combined_discovery_fig = px.histogram(combined_df, x="datetime", color="type", title="Comparison to total songs listened to")
+    st.plotly_chart(combined_discovery_fig)
