@@ -1,5 +1,7 @@
 import pandas as pd
 import streamlit as st
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 
 from collections import defaultdict
 
@@ -351,13 +353,23 @@ class SpotifyParser:
         self.df["Latitude"] = float("nan")
         self.df["Longitude"] = float("nan")
 
-        # todo find song genres
-        self.df["Genre"] = "API"
+        self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="NOT_GOING_ON_GITHUB", client_secret="WILL_FIGURE_OUT_HOW_BEST_TO_STORE_THIS"))
+        self.df["Genre"] = self.df.apply(self.get_track_genre, axis=1)
 
         self.df = self.df[self.COLUMNS_FOR_ANALYSIS]
 
     def get_dataframe(self):
         return self.df
+
+    def get_track_genre(self, row):
+        track_id = row["spotify_track_uri"]
+        artists = self.sp.track(track_id)["artists"]
+        genres = []
+        for artist in artists:
+            artist_id = artist["uri"]
+            genres.extend(self.sp.artist(artist_id)["genres"])
+
+        return genres
 
 
 if __name__ == '__main__':
