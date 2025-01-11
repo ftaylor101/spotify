@@ -36,18 +36,18 @@ class AppleParser:
 
     END_REASON_DICT = {
         "EXITED_APPLICATION": "logout",
-        "FAILED_TO_LOAD ": "track_error",
+        "FAILED_TO_LOAD": "track_error",
         "MANUALLY_SELECTED_PLAYBACK_OF_A_DIFF_ITEM": "selected_diff_item",
-        "NATURAL_END_OF_TRACK ": "track_done",
+        "NATURAL_END_OF_TRACK": "track_done",
         "NOT_APPLICABLE": "unknown",
         "OTHER": "uknown",
-        "PLAYBACK_MANUALLY_PAUSED ": "pause",
-        "PLAYBACK_SUSPENDED ": "suspended",
+        "PLAYBACK_MANUALLY_PAUSED": "pause",
+        "PLAYBACK_SUSPENDED": "suspended",
         "SCRUB_BEGIN": "scrub_begin",
         "SCRUB_END": "scrub_end",
         "TRACK_SKIPPED_BACKWARDS": "back_button",
         "TRACK_SKIPPED_FORWARDS": "forward_button",
-        "NaN": "unknown"
+        pd.NA: "unknown"
     }
 
     SHUFFLE_DICT = {
@@ -69,7 +69,6 @@ class AppleParser:
     ]
 
     RENAME_COLUMNS = {
-        "Event Start Timestamp": "Datetime",
         "Album Name": "Album name",
         "Song Name": "Song name",
         "End Reason Type": "End reason",
@@ -149,7 +148,5 @@ if __name__ == '__main__':
     df = apple_parser.get_dataframe()
     st.write(df.head(50))
 
-    clean_df = df.dropna(subset=['IP Latitude', 'IP Longitude'])
-    lat_lon_df = clean_df[['IP Latitude', 'IP Longitude']]
-    lat_lon_df.rename(columns={'IP Latitude': 'latitude', 'IP Longitude': 'longitude'}, inplace=True)
-    st.map(lat_lon_df, latitude="IP Latitude", longitude="IP Longitude")
+    clean_df = df.dropna(subset=['Latitude', 'Longitude'])
+    st.map(clean_df, latitude="Latitude", longitude="Longitude")
