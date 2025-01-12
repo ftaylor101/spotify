@@ -112,17 +112,15 @@ class AppleParser:
         self.music_activity_df["Event Start Timestamp"].replace("", pd.NA, inplace=True)
         self.music_activity_df.dropna(subset=["Event Start Timestamp"], inplace=True)
 
-        # load and read the identifier and library tracks data
-        self.identifier_df = pd.read_json(identifier_file_path)
+        # load, read and rename two columns in library tracks data
         self.library_tracks_df = pd.read_json(library_tracks_file_path)
+        library_rename = {"Title": "Song Name", "Album": "Album Name"}
+        self.library_tracks_df.rename(columns=library_rename, inplace=True)
 
-        # Merge the DataFrames on 'Song Name' and 'Title' columns
-        merged_df = pd.merge(self.music_activity_df, self.identifier_df, left_on='Song Name', right_on='Title')
-        converted_df = merged_df.astype({'Identifier': int})
-        # Merge the DataFrames on 'Identifier' and 'Apple Music Identifier' columns
-        self.df = pd.merge(converted_df, self.library_tracks_df, left_on='Identifier', right_on='Apple Music Track Identifier')
+        # Merge the DataFrames on common columns: 'Song Name' and 'Album Name'
+        self.df = self.music_activity_df.merge(self.library_tracks_df, on=['Song Name', 'Album Name'], how="inner")
 
-        # Create new columns
+        # Create new columns or rename existing
         self.df["Datetime"] = pd.to_datetime(self.df["Event Start Timestamp"], format='mixed')
         self.df["Day name"] = self.df["Datetime"].dt.day_name()
         self.df["Day number"] = self.df["Datetime"].dt.day
