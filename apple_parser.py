@@ -103,6 +103,11 @@ class AppleParser:
 
         # cleaning the music activity data
         self.music_activity_df = pd.read_csv(csv_file_path)
+        self.music_activity_df.dropna(subset=['Album Name'], inplace=True)
+        self.music_activity_df.dropna(subset=['Song Name'], inplace=True)
+        self.music_activity_df = self.music_activity_df[self.music_activity_df['Media Type'] != 'VIDEO']
+        self.music_activity_df = self.music_activity_df[self.music_activity_df['Play Duration Milliseconds'] >= 0]
+        self.music_activity_df = self.music_activity_df[self.music_activity_df['Event Type'] != 'LYRIC_DISPLAY']
         self.music_activity_df = self.music_activity_df[self.COLUMNS]
         self.music_activity_df["Event Start Timestamp"].replace("", pd.NA, inplace=True)
         self.music_activity_df.dropna(subset=["Event Start Timestamp"], inplace=True)
