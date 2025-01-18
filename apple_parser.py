@@ -59,6 +59,7 @@ class AppleParser:
     def __constant_factory(value):
         return lambda: value
 
+    # TODO do I really need this?
     COUNTRY_DICT = defaultdict(__constant_factory("Unknown"))
     COUNTRY_LIST = [
         ("GB", "United Kingdom"),
@@ -102,6 +103,7 @@ class AppleParser:
         for k, v in self.COUNTRY_LIST:
             self.COUNTRY_DICT[k] = v
 
+        # TODO clean up some pandas warnings
         # cleaning the music activity data
         self.music_activity_df = pd.read_csv(csv_file_path)
         self.music_activity_df.dropna(subset=['Album Name'], inplace=True)
