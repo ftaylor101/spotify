@@ -87,6 +87,7 @@ class AppleParser:
         "Album name",
         "Song name",
         "Song and Artist name",
+        "Genre",
         "Platform",
         "Milliseconds played",
         "End reason",
@@ -128,6 +129,7 @@ class AppleParser:
         self.df["Year"] = self.df["Datetime"].dt.year
         self.df["Hour"] = self.df["Datetime"].dt.hour
         self.df["Song and Artist name"] = self.df["Song Name"] + " | " + self.df["Artist"]
+        self.df["Genre"] = self.df["Genre"].apply(lambda x: [x])
         self.df["Platform"] = self.df["Device OS Name"] + " | " + self.df["Device Type"] + " | " + self.df["Device OS Version"]
         self.df["Milliseconds played"] = self.df["Play Duration Milliseconds"]
         self.df.replace({"End Reason Type": self.END_REASON_DICT}, inplace=True)
