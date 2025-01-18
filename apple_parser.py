@@ -59,7 +59,6 @@ class AppleParser:
     def __constant_factory(value):
         return lambda: value
 
-    # TODO do I really need this?
     COUNTRY_DICT = defaultdict(__constant_factory("Unknown"))
     COUNTRY_LIST = [
         ("GB", "United Kingdom"),
@@ -113,6 +112,7 @@ class AppleParser:
         self.music_activity_df = self.music_activity_df[self.COLUMNS]
         self.music_activity_df.replace({"Event Start Timestamp": ""}, pd.NA, inplace=True)
         self.music_activity_df.dropna(subset=["Event Start Timestamp"], inplace=True)
+        self.music_activity_df.replace({"IP Country Code": pd.NA}, "unknown", inplace=True)
 
         # load, read and rename two columns in library tracks data
         self.library_tracks_df = pd.read_json(library_tracks_file_path)
