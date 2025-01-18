@@ -22,16 +22,18 @@ This has a lot of information, specifically it looks like each time any song was
 * Apple_Media_Services\Apple_Media_Services\Apple Music Activity\Identifier Information.json
 It turns out this is hard to use due to songs having the same name but different identifiers. So it is not ideal to use this. This appears to have the identifiers for artists, albums and songs. This may have to be referred back to when analysing other files. However it doesn't always match up to idenitfiers in Play History Daily Tracks.csv.
 
-* C:\t\Apple_Media_Services\Apple_Media_Services\Apple Music Activity\Apple Music - Top Content.csv
+* Apple_Media_Services\Apple_Media_Services\Apple Music Activity\Apple Music - Top Content.csv
 Ranks artists by play time.
 
 
 ### What can we do...
 First load in Play Activity.json and clean the data:
+
 * Remove rows where there is no album name, 
 * Remove where there is no song name, 
 * Remove video as media type, 
 * Remove where play duration is less than 0
 * Remove where the event type is displaying lyrics
 * For remaining rows fill empty cells with NaN or pd.NA or appropriate blank value
+
 Load in Library Tracks.json and merge the two dataframes on Song Name and Album Name (some columns will need renaming). Rename the columns in accordance to the wiki page.
