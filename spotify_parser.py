@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+# import spotipy
+# from spotipy.oauth2 import SpotifyClientCredentials
 
 from collections import defaultdict
 
@@ -354,8 +354,10 @@ class SpotifyParser:
         self.df["Latitude"] = float("nan")
         self.df["Longitude"] = float("nan")
 
-        self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="NOT_GOING_ON_GITHUB", client_secret="WILL_FIGURE_OUT_HOW_BEST_TO_STORE_THIS"))
-        self.df["Genre"] = self.df.apply(self.get_track_genre, axis=1)
+        # todo issue 9 - investigate api call to avoid rate limit
+        # self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="NOT_GOING_ON_GITHUB", client_secret="WILL_FIGURE_OUT_HOW_BEST_TO_STORE_THIS"))
+        # self.df["Genre"] = self.df.apply(self.get_track_genre, axis=1)
+        self.df["Genre"] = [["N/A"] for x in self.df["Datetime"]]
 
         self.df = self.df[self.COLUMNS_FOR_ANALYSIS]
 
