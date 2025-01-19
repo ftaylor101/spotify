@@ -336,6 +336,7 @@ class SpotifyParser:
 
         self.df = pd.read_json(json_file_path)
         self.df = self.df[self.REQUIRED_COLUMNS]
+        self.df.dropna(subset=["master_metadata_track_name"], inplace=True)
 
         self.df["Datetime"] = pd.to_datetime(self.df["ts"], format="%Y-%m-%dT%H:%M:%SZ")
         self.df["Day name"] = self.df["Datetime"].dt.day_name()
@@ -373,6 +374,6 @@ class SpotifyParser:
 
 
 if __name__ == '__main__':
-    spotify_parser = SpotifyParser('./data/spotify/Streaming_History_Audio_2023-2024_3.json')
+    spotify_parser = SpotifyParser('./data/spotify/Streaming_History_Audio_2020-2021_0.json')
     df = spotify_parser.get_dataframe()
     st.write(df.head(50))
