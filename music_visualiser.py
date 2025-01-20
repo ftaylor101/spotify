@@ -2,25 +2,36 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from spotify_parser import SpotifyParser
+from apple_parser import AppleParser
 
-st.title(":notes: Visualise your :musical_note: data :bar_chart:")
 
-uploaded_file = st.file_uploader("Add your data", accept_multiple_files=True)
-if uploaded_file:
-    if isinstance(uploaded_file, list):
+st.title(":notes: :eyes: :musical_note: :bar_chart:")
+
+spotify_uploaded_files = st.file_uploader("Add Spotify data", accept_multiple_files=True)
+apple_uploaded_files = st.file_uploader("Add Apple data", accept_multiple_files=True)
+if spotify_uploaded_files:
+    if isinstance(spotify_uploaded_files, list):
         df = pd.DataFrame()
-        for file in uploaded_file:
+        for file in spotify_uploaded_files:
             tmp_df = SpotifyParser(file).get_dataframe()
             df = pd.concat([tmp_df, df], axis=0)
         df_created = True
     else:
-        df = SpotifyParser(uploaded_file).get_dataframe()
+        df = SpotifyParser(spotify_uploaded_files).get_dataframe()
+        df_created = True
+elif apple_uploaded_files:
+    if "Apple Music Play Activity" in apple_uploaded_files[0].name:
+        df = AppleParser(apple_uploaded_files[0], apple_uploaded_files[1]).get_dataframe()
+        df_created = True
+    else:
+        df = AppleParser(apple_uploaded_files[1], apple_uploaded_files[0]).get_dataframe()
         df_created = True
 else:
     df_created = False
 
 if df_created:
     st.dataframe(df.head())
+    st.write(df.describe())
 
     st.write("### Select Date Range")
     min_date = df["Datetime"].min().date()

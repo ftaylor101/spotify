@@ -97,7 +97,7 @@ class AppleParser:
         "Longitude"
     ]
 
-    def __init__(self, csv_file_path: str, identifier_file_path: str, library_tracks_file_path: str):
+    def __init__(self, csv_file_path: str, library_tracks_file_path: str):
         # Populate the country dictionary
         for k, v in self.COUNTRY_LIST:
             self.COUNTRY_DICT[k] = v
@@ -120,7 +120,7 @@ class AppleParser:
         self.library_tracks_df.rename(columns=library_rename, inplace=True)
 
         # Merge the DataFrames on common columns: 'Song Name' and 'Album Name'
-        self.df = self.music_activity_df.merge(self.library_tracks_df, on=['Song Name', 'Album Name'], how="inner")
+        self.df = self.music_activity_df.merge(self.library_tracks_df, on=['Song Name', 'Album Name'], how="left")
 
         # Create new columns or rename existing
         self.df["Datetime"] = pd.to_datetime(self.df["Event Start Timestamp"], format='mixed')
@@ -148,11 +148,11 @@ class AppleParser:
 if __name__ == '__main__':
     apple_parser = AppleParser(
         './data/apple/Apple Music Play Activity.csv',
-        './data/apple/Identifier Information.json',
         './data/apple/Apple Music Library Tracks.json'
     )
     df = apple_parser.get_dataframe()
     st.write(df.head(50))
+    st.write(df.describe())
 
     clean_df = df.dropna(subset=['Latitude', 'Longitude'])
     st.map(clean_df, latitude="Latitude", longitude="Longitude")
