@@ -1,8 +1,17 @@
+import json
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from streamlit_lottie import st_lottie
 
 
+def load_lottiefile(filepath):
+    with open(filepath) as f:
+        return json.load(f)
+
+
+lottie_animation = load_lottiefile("animations/music_visualiser.json")
+st_lottie(lottie_animation)
 st.title(":notes: Visualise your Spotify data :bar_chart:")
 
 uploaded_file = st.file_uploader("Add your data", accept_multiple_files=True)
@@ -145,3 +154,7 @@ if df_created:
     combined_df = pd.concat([discovery_df, repeated_df])
     combined_discovery_fig = px.histogram(combined_df, x="datetime", color="type", title="Comparison to total songs listened to")
     st.plotly_chart(combined_discovery_fig)
+
+
+equaliser_animation = load_lottiefile("animations/equaliser.json")
+st_lottie(equaliser_animation)
