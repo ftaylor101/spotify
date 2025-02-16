@@ -20,12 +20,19 @@ if spotify_uploaded_files:
         df = SpotifyParser(spotify_uploaded_files).get_dataframe()
         df_created = True
 elif apple_uploaded_files:
-    if "Apple Music Play Activity" in apple_uploaded_files[0].name:
-        df = AppleParser(apple_uploaded_files[0], apple_uploaded_files[1]).get_dataframe()
-        df_created = True
-    else:
-        df = AppleParser(apple_uploaded_files[1], apple_uploaded_files[0]).get_dataframe()
-        df_created = True
+    # find order of files
+    names = [apple_uploaded_files[i].name for i in range(len(apple_uploaded_files))]
+    for i in range(len(apple_uploaded_files)):
+        play_activity_idx = next(i for i, name in enumerate(names) if "Apple Music Play Activity" in name)
+        library_tracks_idx = next(i for i, name in enumerate(names) if "Apple Music Library Tracks" in name)
+        play_history_daily_tracks_idx = next(i for i, name in enumerate(names) if "Play History Daily Tracks" in name)
+    st.write(f"The indexes are: {play_activity_idx, library_tracks_idx, play_history_daily_tracks_idx}")
+    df = AppleParser(
+        csv_file_path=apple_uploaded_files[play_activity_idx],
+        library_tracks_file_path=apple_uploaded_files[library_tracks_idx],
+        history_daily_tracks=apple_uploaded_files[play_history_daily_tracks_idx]
+    ).get_dataframe()
+    df_created = True
 else:
     df_created = False
 

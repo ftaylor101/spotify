@@ -140,11 +140,6 @@ class AppleParser:
         self.music_activity_df["Artist"] = self.music_activity_df["Probable Artist"].fillna(self.music_activity_df["Artist from non exact matches"])
         self.music_activity_df['Genre'] = self.music_activity_df["Artist"].apply(self._get_genre)
 
-        # Merge the DataFrames on common columns: 'Song Name' and 'Album Name'
-        # self.df = self.music_activity_df.merge(self.library_tracks_df, on=['Song Name', 'Album Name'], how="left")
-
-        print(self.music_activity_df.columns)
-
         # Create new columns or rename existing
         self.music_activity_df["Datetime"] = pd.to_datetime(self.music_activity_df["Event Start Timestamp"], format='mixed')
         self.music_activity_df["Day name"] = self.music_activity_df["Datetime"].dt.day_name()
@@ -153,7 +148,6 @@ class AppleParser:
         self.music_activity_df["Year"] = self.music_activity_df["Datetime"].dt.year
         self.music_activity_df["Hour"] = self.music_activity_df["Datetime"].dt.hour
         self.music_activity_df["Song and Artist name"] = self.music_activity_df["Song Name"] + " | " + self.music_activity_df["Artist"]
-        # self.music_activity_df["Genre"] = self.music_activity_df["Genre"].apply(lambda x: [x])
         self.music_activity_df["Platform"] = self.music_activity_df["Device OS Name"] + " | " + self.music_activity_df["Device Type"] + " | " + self.music_activity_df["Device OS Version"]
         self.music_activity_df["Milliseconds played"] = self.music_activity_df["Play Duration Milliseconds"]
         self.music_activity_df.replace({"End Reason Type": self.END_REASON_DICT}, inplace=True)
