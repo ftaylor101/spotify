@@ -118,8 +118,10 @@ class AppleParser:
         self.library_tracks_df = pd.read_json(library_tracks_file_path)
         library_rename = {"Title": "Song Name", "Album": "Album Name"}
         self.library_tracks_df.rename(columns=library_rename, inplace=True)
-        self.library_tracks_df = self.library_tracks_df.filter(['Artist', 'Song Name', 'Album Name'])
+        self.library_tracks_df = self.library_tracks_df.filter(['Artist', 'Song Name', 'Album Name', 'Genre'])
         self.library_tracks_df = self.library_tracks_df.drop_duplicates()
+        self.library_tracks_df['Artist'] = self.library_tracks_df['Artist'].str.lower()
+        self.artist_groups = self.library_tracks_df.groupby('Artist')
 
         # load, read and clean daily tracks
         self.daily_tracks_df = pd.read_csv(history_daily_tracks)
@@ -136,6 +138,7 @@ class AppleParser:
         self.music_activity_df['Artist from non exact matches'] = self.music_activity_df.apply(lambda x: self._non_exact_track_names(x["Song Name"]), axis=1)
         self.music_activity_df['Probable Artist'] = self.music_activity_df.apply(lambda x: self._find_artist_in_library(x["Album Name"], x["Song Name"]), axis=1)
         self.music_activity_df["Artist"] = self.music_activity_df["Probable Artist"].fillna(self.music_activity_df["Artist from non exact matches"])
+        self.music_activity_df['Genre'] = self.music_activity_df["Artist"].apply(self._get_genre)
 
         # Merge the DataFrames on common columns: 'Song Name' and 'Album Name'
         # self.df = self.music_activity_df.merge(self.library_tracks_df, on=['Song Name', 'Album Name'], how="left")
@@ -150,7 +153,7 @@ class AppleParser:
         self.music_activity_df["Year"] = self.music_activity_df["Datetime"].dt.year
         self.music_activity_df["Hour"] = self.music_activity_df["Datetime"].dt.hour
         self.music_activity_df["Song and Artist name"] = self.music_activity_df["Song Name"] + " | " + self.music_activity_df["Artist"]
-        self.music_activity_df["Genre"] = self.music_activity_df["Genre"].apply(lambda x: [x])
+        # self.music_activity_df["Genre"] = self.music_activity_df["Genre"].apply(lambda x: [x])
         self.music_activity_df["Platform"] = self.music_activity_df["Device OS Name"] + " | " + self.music_activity_df["Device Type"] + " | " + self.music_activity_df["Device OS Version"]
         self.music_activity_df["Milliseconds played"] = self.music_activity_df["Play Duration Milliseconds"]
         self.music_activity_df.replace({"End Reason Type": self.END_REASON_DICT}, inplace=True)
@@ -193,6 +196,13 @@ class AppleParser:
         if list_of_artists:
             artist = list_of_artists[0]
         return artist
+
+    def _get_genre(self, artist: str) -> list:
+        try:
+            genres = list(self.artist_groups.get_group(artist.lower())["Genre"].unique())
+        except (AttributeError, KeyError):
+            genres = [None]
+        return genres
 
     def get_dataframe(self):
         return self.music_activity_df
