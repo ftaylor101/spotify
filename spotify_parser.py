@@ -1,8 +1,10 @@
+import json
 import pandas as pd
+import requests
 import streamlit as st
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
-import time
+
+from os import environ
+from dotenv import load_dotenv
 
 from collections import defaultdict
 
@@ -357,7 +359,10 @@ class SpotifyParser:
 
         self.artist_dict = {}
         self.song_dict = {}
-        self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="NOT_GOING_ON_GITHUB", client_secret="WILL_FIGURE_OUT_HOW_BEST_TO_STORE_THIS"))
+
+        load_dotenv()
+        self.last_fm_key = environ["LAST_FM_API_KEY"]
+
         self.df["Genre"] = self.df.apply(self.get_track_genre, axis=1)
         self.df["Genre"] = [["N/A"] for x in self.df["Datetime"]]
 
@@ -367,27 +372,27 @@ class SpotifyParser:
         return self.df
 
     def get_track_genre(self, row):
-        track_id = row["spotify_track_uri"]
-        if track_id in self.song_dict:
-            genres = self.song_dict[track_id]
-        else:
-            artists = self.sp.track(track_id)["artists"]
-            genres = []
-            for artist in artists:
-                artist_id = artist["uri"]
-                if artist_id in self.artist_dict:
-                    artist_genres = self.artist_dict[artist_id]
-                else:
-                    time.sleep(2)
-                    artist_genres = self.sp.artist(artist_id)["genres"]
-                    self.artist_dict[artist_id] = artist_genres
-                genres.extend(artist_genres)
-            genres = list(set(genres))
-            self.song_dict[track_id] = genres
+        headers = {"user-agent": "Music Analyser"}
+        payload = {
+            "api_key": self.last_fm_key,
+            "method": "track.getInfo",
+            "format": "json",
+            "artist": row["Artist"],
+            "track": row["Song name"]
+        }
+        r = requests.get('https://ws.audioscrobbler.com/2.0/', headers=headers, params=payload)
+        r.status_code
+        try:
+            response = r.json()['track']['toptags']['tag']
+        except (KeyError, json.JSONDecodeError):
+            response = []
+        genres = []
+        for g in response:
+            genres.append(g['name'])
         return genres
 
 
 if __name__ == '__main__':
-    spotify_parser = SpotifyParser('./data/Streaming_History_Audio_2024_4.json')
+    spotify_parser = SpotifyParser('./data/less_data.json')
     df = spotify_parser.get_dataframe()
     st.write(df.head(50))
