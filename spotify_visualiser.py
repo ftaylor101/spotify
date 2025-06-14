@@ -61,6 +61,19 @@ if df_created:
     os_fig = px.histogram(df_date_filtered, x="platform")
     st.plotly_chart(os_fig)
 
+    st.write("### Listening Stats :headphones:")
+    df_finished_songs = df_date_filtered[df_date_filtered["reason_end"] == "trackdone"].sort_values(by="ms_played")
+    df_finished_songs.to_csv('output.csv', index=False)
+    shortest_song = df_finished_songs.iloc[0]["master_metadata_track_name"]
+    longest_song = df_finished_songs.iloc[-1]["master_metadata_track_name"]
+    total_time = df_date_filtered["ms_played"].sum() // (1000*60)
+    unique_count = df_date_filtered["master_metadata_track_name"].nunique()
+    listening_stats = pd.DataFrame({
+        "Stat": ["Shortest song listened to", "Longest song listened to", "Total time listening", "Unique songs"],
+        "Value": [shortest_song, longest_song, f"{total_time} minutes", unique_count]
+    })
+    st.table(listening_stats)
+
     st.write("## More charts")
     st.write("Below are charts that show the artists/albums/tracks that make up the top 25/50/75/100% of all the music listened to.")
     # artist
