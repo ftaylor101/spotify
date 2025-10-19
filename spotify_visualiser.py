@@ -14,7 +14,7 @@ lottie_animation = load_lottiefile("animations/music_visualiser.json")
 st_lottie(lottie_animation)
 st.title(":notes: Visualise your Spotify data :bar_chart:")
 
-uploaded_file = st.file_uploader("Add your data", accept_multiple_files=True)
+uploaded_file = st.file_uploader("Add your data", accept_multiple_files=True, type=["json"])
 if uploaded_file:
     if isinstance(uploaded_file, list):
         df = pd.DataFrame()
